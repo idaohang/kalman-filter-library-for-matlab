@@ -1,0 +1,23 @@
+classdef CV < Model
+    %CV Summary of this class goes here
+    %   Detailed explanation goes here
+    
+    properties (Constant)
+        stateTransitionMatrix=[1 1;0 1];
+        stateDesciption=['s';'v'];
+        % x=[s;v]
+        % x=[s;s;s;]
+        % ('s','s_x','s','s_y','s','s_z','v','v_x','v','v_y','v','v_z')
+    end
+    properties
+        T
+        % x=[s;v]
+        % x=[s;s;s;]
+        % ('s','s_x','s','s_y','s','s_z','v','v_x','v','v_y','v','v_z')
+    end
+    
+    methods
+    end
+    
+end
+
