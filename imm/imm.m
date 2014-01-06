@@ -1,3 +1,4 @@
+clear all;
 %% Model 1: CV-Model
 modelCV=CV(5);
 %% Model 2: CA-Model
@@ -10,16 +11,14 @@ immgt.mode(51:70) = 2;
 immgt.mode(71:120) = 1;
 immgt.mode(121:150) = 2;
 immgt.mode(151:200) = 1;
+immgt.initInitialState([0;0;0]);
 immgt.generateGroundTruth();
-% Generate the measurements.
-for i = 1:nSteps
-    xDim=size(H{mode(i)},2);
-    y(i)=[H{mode(i)} zeros(xDim<3)]*x(:,i)+randn;
-end
+measurementModels={[1 0],[1 0 0]};
+immgt.generateMeasurements(measurementModels);
 
 
 
-stairs(mode);
+stairs(immgt.mode);
 ylim([0.5 2.5]);
 set(gca,'YTickLabel',{'';'CV';'';'CA'})
 title('Mode Probability');
