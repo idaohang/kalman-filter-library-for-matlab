@@ -6,22 +6,20 @@ clear all;
 modelCV=CV(5);
 % Setup a state variable configuration
 modelCV.setStateTransitionMatrix('s','s_x','s','s_y','s','s_z','v','v_x','v','v_y','v','v_z');
-
 %% Setup Kalman Filter
 kf=KalmanFilter(modelCV);
-x0=[0;0;0;0;0];
+x0=[0;0;0;0;0;0];
 % configure start values
-kf.initInitalState(x0);
-kf.initInitalCovariance(eye(6));
+kf.initInitialState(x0);
+kf.initInitialCovariance(eye(6));
 % configure measurement model
 kf.setMeasurmentModel('s_x','s_y','s_z');
-kf.setMeasurmentCovar(eye(3));
+kf.setMeasurmentCovariance(eye(3));
 %% Setup GroundTruthGenerator
 gt=GroundTruthGenerator(modelCV,100);
-gt.initInitalState(x0);
-gt.generateGroundTruth(kf.Q);
+gt.initInitialState(x0);
+gt.generateGroundTruth();
 gt.generateMeasurements(kf.H,kf.R);
 
 %% Start Estimation
-kf.setMeasurments(gt.measurements);
-kf.run();
+kf.run(gt.measurements,0);

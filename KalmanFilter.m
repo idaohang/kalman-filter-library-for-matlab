@@ -11,6 +11,8 @@ classdef KalmanFilter<handle
         
         x;      % state vector
         P;      % covariance matrix
+        
+        model;
     end
     properties (SetAccess = private)
         S;      % innovation matrix
@@ -23,9 +25,11 @@ classdef KalmanFilter<handle
     methods
         %% Constructor
         function obj = KalmanFilter(inModel)
+            obj.model=inModel;
             obj.T = inModel.T;
             obj.F = inModel.F;
             obj.Q = inModel.Q;
+            obj.G=0;
         end
         
         %% INITIALIZATION
@@ -36,11 +40,30 @@ classdef KalmanFilter<handle
             obj.P=inP;
         end
         
+        %% CONFIGURATION MEASUREMENT MODEL
+        function setMeasurmentModel(obj, varargin)
+            obj.H=zeros(length(varargin),size(obj.F));
+            for j=1:length(varargin)
+                for i=1:length(obj.F)
+                    if strcmp(obj.model.stateConfiguration{i},varargin{j})
+                        obj.H(j,i)=1;
+                    end
+                end
+            end
+        end
+        
+        function setMeasurmentCovariance(obj, inR)
+            obj.R=inR;
+        end
+        
         %% RUN
-        function obj = run(obj, measurements, u)
+        function obj = run(obj, measurements, varargin)
             if obj.checkValues()
                 obj.state{1}=obj.x;
                 obj.covariance{1}=obj.P;
+                if length(varargin)
+                    u=zeros(length(measurements));
+                end
                 for i=2:length(measurements)
                     % Prediction
                     obj.x=obj.F*obj.x+obj.G*u(i);
