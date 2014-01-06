@@ -1,16 +1,5 @@
 classdef KalmanFilter<handle
-    % Version 1.1 - www.kalman-filter.de - www.kalman-filter.com
-    %KALMANFILTER general implementation of kalman filter
-    %   Usage:
-    %   1. Indicate system matrix F
-    %   2. Indicate messurement matrix H
-    %   3. Indicate sample period T
-    %   4. Indicate covariance matrix process noise Q
-    %   5. Indicate covariance matrix messurement noise R
-    %   6. Indicate gain matrix G
-    %   7. Indicate state and covariance with method InitState &
-    %   InitCovariance
-    
+
     properties (SetAccess = public)
         T;      % sample period
         F;      % system matrix
