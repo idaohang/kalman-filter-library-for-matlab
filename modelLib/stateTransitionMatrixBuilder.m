@@ -1,6 +1,7 @@
 function [ outF, outFDes ] = stateTransitionMatrixBuilder(inF, inDes, varargin)
 %STATETRANSITIONMATRIXBUILDER Summary of this function goes here
 %   Detailed explanation goes here
+varargin=varargin{:};
 nVarargs = length(varargin);
 nVarInDes = length(inDes);
 outF=NaN(nVarargs/2,nVarargs/2);

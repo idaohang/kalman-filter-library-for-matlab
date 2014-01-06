@@ -1,15 +1,15 @@
 classdef (Abstract) Model < handle
     
     properties (Constant, Abstract)
-        
         stateDescription;
         %shortDescription;
         %paramsDefault;
     end
     
     properties (Abstract)
-        T
-        stateTransitionMatrix
+        T % sample rate
+        F % state transition matrix
+        Q % process noise covariance matrix
     end
     
     methods (Abstract)

@@ -17,26 +17,34 @@ classdef KalmanFilter<handle
         H;      % messurement matrix
         Q;      % covariance matrix process noise
         R;      % covariance matrix messurement noise
-        S;      % innovation matrix
-        K;      % kalman gain matrix
+        
         G;      % input gain matrix
         
         x;      % state vector
         P;      % covariance matrix
+    end
+    properties (SetAccess = private)
+        S;      % innovation matrix
+        K;      % kalman gain matrix
         
         state;
         covariance;
     end
     
     methods
-        % INITIALIZATION
-        function [ret]=InitState(obj, x_init)
-            obj.x=x_init;
-            ret=1;
+        %% Constructor
+        function obj = KalmanFilter(inModel)
+            obj.T = inModel.T;
+            obj.F = inModel.F;
+            obj.Q = inModel.Q;
         end
-        function [ret]=InitCovariance(obj,P_init)
-            obj.P=P_init;
-            ret=1;
+        
+        % INITIALIZATION
+        function initInitialState(obj, inX) % start value of state for recursion
+            obj.x=inX;
+        end
+        function initInitialCovariance(obj, inP) % start value of covariance for recursion
+            obj.P=inP;
         end
         %%
         function [ret]=reset(obj)
