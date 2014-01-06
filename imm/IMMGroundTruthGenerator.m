@@ -32,5 +32,11 @@ classdef IMMGroundTruthGenerator < handle
                 obj.measurements(:,i)=[inH{obj.mode(i)} zeros(xDim<3)]*obj.x(:,i)+randn;
             end
         end
+        function plotModeProbability(obj)
+            stairs(obj.mode);
+            ylim([0.5 2.5]);
+            set(gca,'YTickLabel',{'';'CV';'';'CA'})
+            title('Mode Probability');
+        end
     end
 end

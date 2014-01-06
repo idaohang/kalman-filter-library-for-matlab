@@ -15,10 +15,6 @@ immgt.initInitialState([0;0;0]);
 immgt.generateGroundTruth();
 measurementModels={[1 0],[1 0 0]};
 immgt.generateMeasurements(measurementModels);
+immgt.plotModeProbability();
 
-
-
-stairs(immgt.mode);
-ylim([0.5 2.5]);
-set(gca,'YTickLabel',{'';'CV';'';'CA'})
-title('Mode Probability');
+kf1=KalmanFilter();
