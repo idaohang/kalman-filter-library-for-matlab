@@ -4,6 +4,7 @@ function [ outF, outFDes ] = stateTransitionMatrixBuilder(inF, inDes, varargin)
 varargin=varargin{:};
 nVarargs = length(varargin);
 nVarInDes = length(inDes);
+outFDes{1}='';
 outF=NaN(nVarargs/2,nVarargs/2);
 for i=1:nVarargs/2
     for j=1:nVarargs/2
@@ -11,6 +12,7 @@ for i=1:nVarargs/2
             n=strfind(inDes',varargin{(i-1)+i});
             k=strfind(inDes',varargin{(j-1)+j});
             outF(i,j)=inF(n,k);
+            outFDes{i}=varargin{(i-1)+(i+1)};
         else % uncoupled States
             outF(i,j)=0;
         end

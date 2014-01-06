@@ -18,12 +18,21 @@ immgt.generateMeasurements(measurementModels);
 immgt.plotModeProbability();
 
 
-%% Setup Kalman Filter
+%% Setup Kalman Filter 1
 kf1=KalmanFilter(modelCV);
 x0=[0;0];
 % configure start values
 kf1.initInitialState(x0);
-kf1.initInitialCovariance(eye(6));
+kf1.initInitialCovariance(eye(2));
 % configure measurement model
 kf1.setMeasurmentModel('s_x');
-kf1.setMeasurmentCovar(eye(2));
+kf1.setMeasurmentCovariance(eye(2));
+%% Setup Kalman Filter 2
+kf2=KalmanFilter(modelCA);
+x0=[0;0;0];
+% configure start values
+kf2.initInitialState(x0);
+kf2.initInitialCovariance(eye(3));
+% configure measurement model
+kf2.setMeasurmentModel('s_x');
+kf2.setMeasurmentCovariance(eye(3));

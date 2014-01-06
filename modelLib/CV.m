@@ -11,6 +11,7 @@ classdef CV < Model
         T
         F
         Q
+        Gamma
         
         stateConfiguration
     end
@@ -21,12 +22,19 @@ classdef CV < Model
             obj.F=getStateTransitionMatrix(obj, params);
             % default process noise model is DWNA (more common)
             obj.Q=getProcessNoiseCovariance(obj, 'DWNA', 1);
+            obj.Gamma=getProcessNoiseGain(obj, 'DWNA');
+            obj.stateConfiguration={obj.stateDescription(1),obj.stateDescription(2)};
         end
     end
     methods
         function setStateTransitionMatrix(obj, varargin)
-            obj.F=stateTransitionMatrixBuilder(obj.F,obj.stateDescription,varargin);
-            obj.stateConfiguration=varargin;%todo set procesNoiseMatrix
+            [obj.F,obj.stateConfiguration]=stateTransitionMatrixBuilder(obj.F,obj.stateDescription,varargin);
+            obj.Gamma=processNoiseVectorBuilder(obj.Gamma,obj.stateDescription,varargin);
+            obj.Q=obj.Gamma*obj.Gamma';
+            %todo set procesNoiseMatrix
+        end
+        function setProcessNoiseGain(obj, inGamma)
+            obj.Gamma=inGamma;
         end
     end
     methods (Access = private)
@@ -41,6 +49,16 @@ classdef CV < Model
             % Continuous White Noise Acceleration Model (CWNA)
             if strcmp(inModel,'CWNA')
                 Q=[(1/3)*obj.T^3 (1/2)*obj.T^2;(1/2)*obj.T^2 obj.T]*inVar;
+            end
+        end
+        function Gamma = getProcessNoiseGain(obj, inModel)
+            % Discrete White Noise Acceleration Model (DWNA)
+            if strcmp(inModel,'DWNA')
+                Gamma=[0.5*obj.T^2;obj.T];
+            end
+            % Continuous White Noise Acceleration Model (CWNA)
+            if strcmp(inModel,'CWNA')
+                Gamma=[0;1];
             end
         end
     end
