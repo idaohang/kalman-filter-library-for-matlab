@@ -11,6 +11,8 @@ classdef CV < Model
         T
         F
         Q
+        
+        stateConfiguration
     end
     
     methods
@@ -24,7 +26,7 @@ classdef CV < Model
     methods
         function setStateTransitionMatrix(obj, varargin)
             obj.F=stateTransitionMatrixBuilder(obj.F,obj.stateDescription,varargin);
-            %todo set procesNoiseMatrix
+            obj.stateConfiguration=varargin;%todo set procesNoiseMatrix
         end
     end
     methods (Access = private)
