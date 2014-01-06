@@ -11,9 +11,9 @@ classdef IMMGroundTruthGenerator
     end
     
     methods
-        function obj = IMMGroundTruthGenerator(inModels,inSteps)
+        function obj = IMMGroundTruthGenerator(inSteps,varargin)
             obj.steps=inSteps;
-            obj.models=inModels;
+            obj.models=varargin;
         end
         function generateGroundTruth(obj)
             for i = 2:obj.steps
