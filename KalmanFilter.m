@@ -11,8 +11,9 @@ classdef KalmanFilter<handle
         
         x;      % state vector
         P;      % covariance matrix
-        z
+        z       % predicted measurement
         
+        measurments
         model;
     end
     properties (SetAccess = private)
@@ -61,6 +62,12 @@ classdef KalmanFilter<handle
             obj.P=obj.F*obj.P*obj.F'+obj.Q;
             obj.z=obj.H*obj.x;
         end
+        function update(obj,measurements)
+            obj.S=obj.R+obj.H*obj.P*obj.H';
+            obj.K=obj.P*obj.H'*pinv(obj.S);
+            obj.x=obj.x+obj.K*(measurements-obj.z);
+            obj.P=(eye(size(obj.P,2))-obj.K*obj.H)*obj.P*(eye(size(obj.P,2))-obj.K*obj.H)'+obj.K*obj.R*obj.K';
+        end
         %% RUN
         function obj = run(obj, measurements, varargin)
             if obj.checkValues()
@@ -70,18 +77,8 @@ classdef KalmanFilter<handle
                     u=zeros(length(measurements));
                 end
                 for i=2:length(measurements)
-                    % Prediction
-                    %obj.x=obj.F*obj.x+obj.G*u(i);
-                    %obj.P=obj.F*obj.P*obj.F'+obj.Q;
-                    %z=obj.H*obj.x;
                     predict(obj.x,u(i));
-                    % Filering
-                    obj.S=obj.R+obj.H*obj.P*obj.H';
-                    obj.K=obj.P*obj.H'*pinv(obj.S);
-                    obj.x=obj.x+obj.K*(measurements(i)-z);
-                    %obj.P=obj.P-obj.K*obj.S*obj.K';
-                    % Joseph Form
-                    obj.P=(eye(size(obj.P,2))-obj.K*obj.H)*obj.P*(eye(size(obj.P,2))-obj.K*obj.H)'+obj.K*obj.R*obj.K';
+                    update(measurement(i));
                     % Save KF Result
                     obj.state{i}=obj.x;
                     if eig(obj.P)<0

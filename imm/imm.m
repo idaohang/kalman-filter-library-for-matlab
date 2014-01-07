@@ -47,17 +47,19 @@ classdef IMM < handle
             end
         end
         %function mixingCovariance()
-        function predictStates(obj)
+        function predictStatesAndCovariances(obj)
             for i=1:obj.nFilters
                 obj.filters{i}.predict(obj.filters{i}.x,0);
             end
         end
-        %function predictCovariances();
-        %function updateStates();
-        %function updateCovariances();
+        function updateStatesAndCovariances(obj)
+            for i=1:obj.nFilters
+                obj.filters{i}.update(obj.filters{i}.x,0);
+            end
+        end
         function calcModelLikelihood(obj)
             for i=1:obj.nFilters
-                L(i)=obj.filters{i}.z-
+                obj.L(i)=obj.filters{i}.measurments-obj.filters{i}.z;
             end
         end
         function updateModeProbability(obj)
