@@ -11,6 +11,7 @@ classdef KalmanFilter<handle
         
         x;      % state vector
         P;      % covariance matrix
+        z
         
         model;
     end
@@ -55,7 +56,11 @@ classdef KalmanFilter<handle
         function setMeasurmentCovariance(obj, inR)
             obj.R=inR;
         end
-        
+        function predict(obj,x,u)
+            obj.x=obj.F*x+obj.G*u;
+            obj.P=obj.F*obj.P*obj.F'+obj.Q;
+            obj.z=obj.H*obj.x;
+        end
         %% RUN
         function obj = run(obj, measurements, varargin)
             if obj.checkValues()
@@ -66,9 +71,10 @@ classdef KalmanFilter<handle
                 end
                 for i=2:length(measurements)
                     % Prediction
-                    obj.x=obj.F*obj.x+obj.G*u(i);
-                    obj.P=obj.F*obj.P*obj.F'+obj.Q;
-                    z=obj.H*obj.x;
+                    %obj.x=obj.F*obj.x+obj.G*u(i);
+                    %obj.P=obj.F*obj.P*obj.F'+obj.Q;
+                    %z=obj.H*obj.x;
+                    predict(obj.x,u(i));
                     % Filering
                     obj.S=obj.R+obj.H*obj.P*obj.H';
                     obj.K=obj.P*obj.H'*pinv(obj.S);
