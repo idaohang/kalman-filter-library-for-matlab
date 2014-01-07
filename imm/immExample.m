@@ -48,6 +48,7 @@ imm.predictStates();
 %imm.predictCovariances();
 %imm.updateStates();
 %imm.updateCovariances();
+%imm.calcModelLikelihood();
 %imm.updateModeProbability();
 %imm.overallEstimate();
 %imm.overallCovariance();

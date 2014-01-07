@@ -8,8 +8,9 @@ classdef IMM < handle
         
         p_ji % transition probability
         u_i_k % mode probability
-        u_i_k1 % mode probability predicted k1 denotes k+1
+        u_i_k1 % mode probability predicted k1 denotes k-1
         u_ji % mixing weight
+        L % model likelihood
         
         x
         P
@@ -54,10 +55,23 @@ classdef IMM < handle
         %function predictCovariances();
         %function updateStates();
         %function updateCovariances();
-        %function updateModeProbability();
+        function calcModelLikelihood(obj)
+            for i=1:obj.nFilters
+                L(i)=obj.filters{i}.z-
+            end
+        end
+        function updateModeProbability(obj)
+            for j=1:obj.nFilters
+                sum=obj.u_i_k1(j)*obj.L(j);
+            end
+            for i=1:obj.nFilters
+                obj.u_i_k(i)=(obj.u_i_k1(i)*obj.L(i))/(sum);
+            end
+        end
+        
         function overallEstimate(obj)
             for i=1:nFilters
-                x(:,i)=obj.filters{i}.x;
+                x(:,i)=obj.filters{i}.x*u_i_k(i);
             end
             obj.x=sum(x,2);
         end
