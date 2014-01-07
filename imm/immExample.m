@@ -36,3 +36,7 @@ kf2.initInitialCovariance(eye(3));
 % configure measurement model
 kf2.setMeasurmentModel('s_x');
 kf2.setMeasurmentCovariance(eye(3));
+
+%% Setup IMM
+imm=IMM();
+imm.p_ij=[0.95 0.05;0.05 0.95];
