@@ -14,17 +14,40 @@ classdef IMM < handle
         
         x
         P
+        
+        overallX
+        overallP
+        
+        measurments
     end
     
     methods
+        
         function obj = IMM(varargin)
             obj.filters=varargin;
             obj.nFilters=length(varargin);
         end
+        
         function setInitialModeProbability(obj,u_i)
             obj.u_i_k=u_i;
         end
+        
         %% IMM functionality
+        function run(obj)
+            for i=1:length(obj.measurments)
+                predictModeProbability(obj);
+                mixingWeight(obj);
+                mixingEstimate(obj);
+                mixingCovariance(obj);
+                predictStatesAndCovariances(obj);
+                updateStatesAndCovariances(obj,i);
+                calcModelLikelihood(obj);
+                updateModeProbability(obj);
+                overallEstimate(obj);
+                overallCovariance(obj);
+            end
+        end
+        
         function predictModeProbability(obj)
             obj.u_i_k1=sum(obj.p_ji(:,1:end)*obj.u_i_k(:),2);
         end
@@ -41,27 +64,42 @@ classdef IMM < handle
             for i=1:obj.nFilters
                 xDim=size(obj.filters{i}.F,2);
                 for j=1:obj.nFilters
-                    x(:,j)=sum(obj.filters{j}.x(1:xDim,:)*obj.u_ji(j,i));
+                    x(:,j)=[obj.filters{j}.x(1:xDim,:);zeros(xDim-size(obj.filters{j}.x,1),1)]*obj.u_ji(j,i);
                 end
-                obj.filters{i}.x=sum(x(:));
+                obj.x{i}=sum(x,2);
+                x=[];
             end
         end
-        %function mixingCovariance()
+        
+        function mixingCovariance(obj)
+            for i=1:obj.nFilters
+                P=0;
+                for j=1:obj.nFilters
+                    P=P+(obj.filters{j}.P+(obj.filters{i}.x-obj.x{j})*(obj.filters{i}.x-obj.x{j})')*obj.u_ji(j,i);
+                end
+                obj.P{i}=P;
+            end
+            
+        end
+        
         function predictStatesAndCovariances(obj)
             for i=1:obj.nFilters
-                obj.filters{i}.predict(obj.filters{i}.x,0);
+                obj.filters{i}.predict(obj.x{i},obj.P{i},0);
             end
         end
-        function updateStatesAndCovariances(obj)
+        
+        function updateStatesAndCovariances(obj,j)
             for i=1:obj.nFilters
-                obj.filters{i}.update(obj.filters{i}.x,0);
+                obj.filters{i}.update(obj.measurement(j),0);
             end
         end
-        function calcModelLikelihood(obj)
+        
+        function calcModelLikelihood(obj,measurment)
             for i=1:obj.nFilters
-                obj.L(i)=obj.filters{i}.measurments-obj.filters{i}.z;
+                obj.L(i)=normpdf(measurment-obj.filters{i}.z,0,obj.filters{i}.S);
             end
         end
+        
         function updateModeProbability(obj)
             for j=1:obj.nFilters
                 sum=obj.u_i_k1(j)*obj.L(j);
@@ -72,15 +110,18 @@ classdef IMM < handle
         end
         
         function overallEstimate(obj)
-            for i=1:nFilters
-                x(:,i)=obj.filters{i}.x*u_i_k(i);
+            for i=1:obj.nFilters
+                x(:,i)=obj.filters{i}.x*obj.u_i_k(i);
             end
-            obj.x=sum(x,2);
+            obj.overallX=sum(x,2);
         end
+        
         function overallCovariance(obj)
-            obj.P=0;
+            obj.overallP=0;
+            for i=1:obj.nFilters
+                obj.overallP=obj.overallP+(obj.filters{i}.P+(obj.overallX-obj.filters{i}.x)*(obj.overallX-obj.filters{i}.x)')*obj.u_i_k(i);
+            end
         end
     end
-    
 end
 

@@ -57,9 +57,9 @@ classdef KalmanFilter<handle
         function setMeasurmentCovariance(obj, inR)
             obj.R=inR;
         end
-        function predict(obj,x,u)
+        function predict(obj,x,P,u)
             obj.x=obj.F*x+obj.G*u;
-            obj.P=obj.F*obj.P*obj.F'+obj.Q;
+            obj.P=obj.F*P*obj.F'+obj.Q;
             obj.z=obj.H*obj.x;
         end
         function update(obj,measurements)

@@ -39,16 +39,7 @@ kf2.setMeasurmentCovariance(eye(3));
 
 %% Setup IMM
 imm=IMM(kf1,kf2);
+imm.measurments=immgt.measurements;
 imm.p_ji=[0.95 0.05;0.05 0.95];
 imm.setInitialModeProbability([0.9;0.1])
-imm.predictModeProbability();
-imm.mixingWeight();
-%imm.mixingCovariances();
-imm.predictStates();
-%imm.predictCovariances();
-%imm.updateStates();
-%imm.updateCovariances();
-%imm.calcModelLikelihood();
-%imm.updateModeProbability();
-%imm.overallEstimate();
-%imm.overallCovariance();
+imm.run();
