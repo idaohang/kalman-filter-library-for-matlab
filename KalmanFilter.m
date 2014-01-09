@@ -72,7 +72,7 @@ classdef KalmanFilter<handle
                     % Filering
                     obj.S=obj.R+obj.H*obj.P*obj.H';
                     obj.K=obj.P*obj.H'*pinv(obj.S);
-                    obj.x=obj.x+obj.K*(measurements(i)-z);
+                    obj.x=obj.x+obj.K*(measurements(:,i)-z);
                     %obj.P=obj.P-obj.K*obj.S*obj.K';
                     % Joseph Form
                     obj.P=(eye(size(obj.P,2))-obj.K*obj.H)*obj.P*(eye(size(obj.P,2))-obj.K*obj.H)'+obj.K*obj.R*obj.K';
@@ -95,6 +95,12 @@ classdef KalmanFilter<handle
                 ret=0;
                 display('Error: x is not a Vector');
                 obj.x
+            end
+        end
+        
+        function x=getState(obj)
+            for i=1:length(obj.state)
+                x(:,i)=obj.state{i}
             end
         end
     end

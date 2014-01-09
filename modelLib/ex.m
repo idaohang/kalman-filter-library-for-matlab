@@ -23,3 +23,9 @@ gt.generateMeasurements(kf.H,kf.R);
 
 %% Start Estimation
 kf.run(gt.measurements,0);
+x=kf.getState();
+plot(x(1,:),'r');
+hold on;
+plot(gt.x(1,:),'--');
+hold on;
+plot(gt.measurements(1,:),'-');
