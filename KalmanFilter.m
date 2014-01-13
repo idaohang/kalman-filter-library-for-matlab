@@ -15,6 +15,8 @@ classdef KalmanFilter<handle
         
         measurments
         model;
+        
+        resudialCovariance
     end
     properties (SetAccess = private)
         S;      % innovation matrix
@@ -61,9 +63,15 @@ classdef KalmanFilter<handle
             obj.x=obj.F*x+obj.G*u;
             obj.P=obj.F*P*obj.F'+obj.Q;
             obj.z=obj.H*obj.x;
+                        if isnan(obj.P(1,1))
+            1
+            end
         end
         function update(obj,measurements)
             obj.S=obj.R+obj.H*obj.P*obj.H';
+            if isnan(obj.S(1,1))
+            1
+            end
             obj.K=obj.P*obj.H'*pinv(obj.S);
             obj.x=obj.x+obj.K*(measurements-obj.z);
             obj.P=(eye(size(obj.P,2))-obj.K*obj.H)*obj.P*(eye(size(obj.P,2))-obj.K*obj.H)'+obj.K*obj.R*obj.K';
@@ -76,9 +84,11 @@ classdef KalmanFilter<handle
                 if length(varargin)
                     u=zeros(length(measurements));
                 end
+                obj.resudialCovariance(1)=0;
                 for i=2:length(measurements)
-                    predict(obj.x,u(i));
-                    update(measurement(i));
+                    predict(obj,obj.x,obj.P,u(i));
+                    update(obj,measurements(i));
+                    obj.resudialCovariance(i)=obj.S;
                     % Save KF Result
                     obj.state{i}=obj.x;
                     if eig(obj.P)<0
@@ -98,6 +108,12 @@ classdef KalmanFilter<handle
                 ret=0;
                 display('Error: x is not a Vector');
                 obj.x
+            end
+        end
+        %% getter % setter
+        function ret=getState(obj)
+            for i=1:length(obj.state)
+                ret(:,i)=obj.state{i};
             end
         end
     end

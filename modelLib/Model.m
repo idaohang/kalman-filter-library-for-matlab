@@ -10,6 +10,7 @@ classdef (Abstract) Model < handle
         T % sample rate
         F % state transition matrix
         Q % process noise covariance matrix
+        var
     end
     
     methods (Abstract)

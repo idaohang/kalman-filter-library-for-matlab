@@ -16,27 +16,47 @@ classdef IMMGroundTruthGenerator < handle
             obj.steps=inSteps;
             obj.models=varargin;
         end
+        
         function initInitialState(obj,inX)
             obj.initialState=inX;
         end
+        
         function generateGroundTruth(obj)
             obj.x=obj.initialState;
             for i = 2:obj.steps
                 xDim=size(obj.models{obj.mode(i)}.F,2);
-                obj.x(:,i) = [obj.models{obj.mode(i)}.F*obj.x(1:xDim,i-1) + randn;zeros(xDim<3)];
+                obj.x(:,i) = [obj.models{obj.mode(i)}.F*obj.x(1:xDim,i-1) + obj.models{obj.mode(i)}.Gamma*randn*obj.models{obj.mode(i)}.var;zeros(xDim<3)];
             end
         end
+        
         function generateMeasurements(obj,inH)
             for i=1:obj.steps
                 xDim=size(inH{obj.mode(i)},2);
                 obj.measurements(:,i)=[inH{obj.mode(i)} zeros(xDim<3)]*obj.x(:,i)+randn;
             end
         end
+        %% Plot Functions
         function plotModeProbability(obj)
             stairs(obj.mode);
             ylim([0.5 2.5]);
             set(gca,'YTickLabel',{'';'CV';'';'CA'})
             title('Mode Probability');
+        end
+        
+        function plotMeasurements(obj)
+            plot(obj.measurements);
+        end
+        
+        function plotGroundTruth(obj)
+            n=size(obj.x,1);
+            for i=1:n
+                plot(obj.x(i,:));
+                figure;
+            end
+        end
+        
+        function plotState(obj,n)
+            plot(obj.x(n,:));
         end
     end
 end
